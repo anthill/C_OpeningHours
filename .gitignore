@@ -31,3 +31,11 @@
 # Debug files
 *.dSYM/
 *.su
+
+a.out
+toto*
+test*
+.ycm*
+*.swp
+*.swo
+tags

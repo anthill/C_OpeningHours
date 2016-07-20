@@ -15,7 +15,6 @@ typedef struct rule_sequence rule_sequence;
 typedef struct selector_sequence selector_sequence;
 typedef struct small_range_selector small_range_selector;
 typedef struct time_selector time_selector;
-typedef struct week_selector week_selector;
 typedef struct weekday_selector weekday_selector;
 typedef struct wide_range_selector wide_range_selector;
 typedef struct year_range year_range;
@@ -62,15 +61,8 @@ enum wide_range_selector_type {
  */
 
 struct monthday_range {
-	int year; // Optionnal
 	bitset days;
 	bool easter;
-};
-
-struct week_selector {
-	week_selector* next_item;
-	bool aligned;
-	bitset weeknum;
 };
 
 struct wide_range_selector {
@@ -79,7 +71,7 @@ struct wide_range_selector {
 		struct {
 			bitset years;
 			monthday_range* monthdays;
-			week_selector weeks;
+			bitset weeks;
 		};
 		char comment[COMMENT_SIZE];
 	};

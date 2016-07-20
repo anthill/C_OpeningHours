@@ -97,7 +97,7 @@ enum bool {
 
 # define _MIN(A, B)                 (((A) < (B)) ? A : B)
 # define _MAX(A, B)                 (((A) > (B)) ? A : B)
-# define _SWAP(A, B)                ({ typeof(A) _t; _t = A; A = B; B = _t; })
+# define _SWAP(A, B)                ({ __auto_type _t = A; A = B; B = _t; })
 
 # define _SET_INDEX(set, index)     ((set)[(index)] = ~((_word_t) 0))
 # define _RESET_INDEX(set, index)   ((set)[(index)] = 0)

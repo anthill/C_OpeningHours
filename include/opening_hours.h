@@ -31,15 +31,15 @@ typedef enum weekday_selector_type weekday_selector_type;
  */
 
 enum rule_modifier_type {
-	RULE_COMMENT = 0,
+	RULE_OPEN = 0,
 	RULE_CLOSED = 1,
-	RULE_OPEN = 2,
+	RULE_COMMENT = 2,
 	RULE_UNKNOWN
 };
 
 enum weekday_selector_type {
-	WD_NTH_OF_MONTH,
-	WD_RANGE
+	WD_RANGE = 0,
+	WD_NTH_OF_MONTH
 };
 
 enum rule_separator {
@@ -78,6 +78,8 @@ struct wide_range_selector {
 };
 
 struct weekday_selector {
+	bool plural_day_holiday;
+	bool single_day_holiday;
 	weekday_selector_type type;
 	union {
 		bitset range;

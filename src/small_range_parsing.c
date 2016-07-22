@@ -4,7 +4,7 @@ static int get_weekday_id(char *s) {
 	size_t i = 7;
 
 	while (*s == ' ') ++s;
-	if (s[1]) {
+	if (*s && s[1]) {
 		for (i = 0; i < 7; i++)
 			if ((strstr(s, WEEKDAY_STR[i]) == s) && !isalpha(s[2]))
 				break;

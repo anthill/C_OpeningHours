@@ -146,5 +146,7 @@ struct opening_hours {
 };
 
 opening_hours build_opening_hours(char *);
+void free_oh(opening_hours);
+void print_oh(opening_hours);
 
 #endif /* !OPENING_HOURS_H_ */

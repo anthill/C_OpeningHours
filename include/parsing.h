@@ -47,8 +47,5 @@ int parse_week_selector(bitset *, char **);
 int parse_weekday_selector(weekday_selector *, char **);
 int parse_wide_range_selector(wide_range_selector *, char **);
 int parse_year_range(bitset *, char **);
-opening_hours build(char *);
-void free_oh(opening_hours);
-void print_oh(opening_hours);
 
 #endif /* PARSING_H_ */

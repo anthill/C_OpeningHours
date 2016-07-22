@@ -70,7 +70,7 @@ enum rule_separator {
 	SEP_HEAD,
 	SEP_SEMICOLON,
 	SEP_COMA,
-	// <space>
+	SEP_FALLBACK
 };
 
 enum wide_range_selector_type {

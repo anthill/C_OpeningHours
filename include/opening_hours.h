@@ -70,7 +70,6 @@ enum rule_separator {
 	SEP_HEAD,
 	SEP_SEMICOLON,
 	SEP_COMA,
-	SEP_FALLBACK
 	// <space>
 };
 
@@ -124,7 +123,7 @@ struct small_range_selector {
 };
 
 struct selector_sequence {
-	bool anyway; // "24/7"
+	bool anyway;
 	wide_range_selector wide_range;
 	small_range_selector small_range;
 };
@@ -138,7 +137,6 @@ struct rule_sequence {
 	rule_separator separator;
 	selector_sequence selector;
 	rule_modifier state;
-	// <space>
 };
 
 struct opening_hours {

@@ -149,5 +149,4 @@ struct opening_hours {
 
 opening_hours build_opening_hours(char *);
 
-
 #endif /* !OPENING_HOURS_H_ */

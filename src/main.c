@@ -12,7 +12,7 @@ void print_oh(opening_hours);
 
 int main(int ac, char **av) {
 	if (ac > 1)
-		print_oh(build(av[1]));
+		print_oh(build_opening_hours(av[1]));
 	return (0);
 }
 #endif /* !STANDALONE */

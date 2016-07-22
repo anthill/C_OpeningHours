@@ -92,7 +92,7 @@ char *set_cursor(int pos, char *str) {
 	return (str);
 }
 
-opening_hours build(char *s) {
+opening_hours build_opening_hours(char *s) {
 	opening_hours oh = calloc(1, sizeof(*oh)),
 		      cur = oh,
 		      prev = NULL;

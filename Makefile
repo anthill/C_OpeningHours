@@ -4,7 +4,12 @@ NAME = ./C_OpeningHours
 
 P_INC = ./include/
 
-SRCS = ./src/main.c
+SRCS = ./src/main.c			\
+       ./src/is_open.c			\
+       ./src/printing.c			\
+       ./src/parsing.c			\
+       ./src/wide_range_parsing.c	\
+       ./src/small_range_parsing.c
 
 MWAIT = echo -ne "\r\033[1;37m[  \033[31m....  \033[37m] \033[0m$$file"
 
@@ -18,7 +23,7 @@ CFLAGS = -Iinclude/ -std=c99 -DSTANDALONE -g -D_DEBUG
 
 LDFLAGS = -Llib/ -Iinclude/
 
-CC = gcc $(CFLAGS)
+CC = gcc
 
 OBJS = $(SRCS:.c=.o)
 
@@ -39,7 +44,12 @@ $(NAME):	$(CC_OBJS)
 		if [[ "$$i" -nt "$(NAME)" ]] ; then export relink="true" ; fi ;\
 	done ; \
 	if [ "$$relink" = "false" ] ; then $(MSKIP) ; exit 0 ; fi ; \
-	$(MWAIT) ; $(CC) -o $(NAME) $(OBJS) && $(MOK) || $(MERR)
+	$(MWAIT) ; $(CC) $(CFLAGS) $(CFLAGS) -o $(NAME) $(OBJS) && $(MOK) || $(MERR)
+
+test:
+	$(CC) $(CFLAGS) -lcunit -o ./src/tests.o -c ./src/tests.c 
+	$(CC) $(CFLAGS) $(LDFLAGS) -lcunit -o tests-unit ./src/tests.o
+	./tests-unit
 
 %.occ:
 	@file="$*.c" ; set -o pipefail ; ${MAKE} --no-print-directory $*.o | grep "up to date" > /dev/null && $(MSKIP) && exit 0 ; \
@@ -50,7 +60,7 @@ $(NAME):	$(CC_OBJS)
 	$(MOK)
 
 %.o:	%.c include/ Makefile
-	@$(CC) -o $@ -c $<
+	@$(CC) $(CFLAGS) -o $@ -c $<
 
 clean:
 	@file="Cleaning objects..." ; $(MWAIT) ; $(RM) $(OBJS) && $(MOK) || $(MERR)
@@ -59,9 +69,6 @@ fclean:	clean
 	@file="Cleaning $(NAME)" ; $(MWAIT) ; $(RM) $(NAME) && $(MOK) || $(MERR)
 
 re:	fclean all
-
-test:	all
-	./$(NAME)
 
 gyver:
 	sl

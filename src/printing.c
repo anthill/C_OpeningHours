@@ -123,7 +123,13 @@ void print_years(bitset years) {
 }
 
 void print_oh(opening_hours oh) {
-	monthday_range *cur = oh->rule.selector.wide_range.monthdays;
+	monthday_range *cur;
+
+	if (!oh) {
+		dprintf(2, "NULL\n");
+		return;
+	}
+	cur = oh->rule.selector.wide_range.monthdays;
 
 	dprintf(2, "\n\n-------- SEPARATOR --------\n");
 	dprintf(2, "  Separator: %d\n", oh->rule.separator);

@@ -15,7 +15,7 @@ void print_weeknum(bitset wn) {
 		} else if (set && !(GET_BIT(wn, i))) {
 			set = 0;
 			ever = 1;
-			if (GET_BIT(wn, i - 2))
+			if (i > 1 && GET_BIT(wn, i - 2))
 				dprintf(2, " - %lu", i);
 			dprintf(2, "\n");
 		}
@@ -39,7 +39,7 @@ void print_hours(time_selector ts) {
 		} else if (set && !(GET_BIT(ts.time_range, i))) {
 			set = 0;
 			ever = 1;
-			if (GET_BIT(ts.time_range, i - 2)) {
+			if (i > 1 && GET_BIT(ts.time_range, i - 2)) {
 				dprintf(2, " - %02lu:%02lu", i / 60, i % 60);
 			}
 			dprintf(2, "\n");
@@ -64,7 +64,7 @@ void print_weekday(weekday_selector wd) {
 		} else if (set && !(GET_BIT(wd.day, i))) {
 			set = 0;
 			ever = 1;
-			if (GET_BIT(wd.day, i - 2)) {
+			if (i > 1 && GET_BIT(wd.day, i - 2)) {
 				dprintf(2, " - %s", WEEKDAY_STR[(i - 1)]);
 			}
 			dprintf(2, "\n");
@@ -88,7 +88,7 @@ void print_months(monthday_range md, int ever) {
 		} else if (set && !(GET_BIT(md.days, i))) {
 			set = 0;
 			ever = 1;
-			if (GET_BIT(md.days, i - 2)) {
+			if (i > 1 && GET_BIT(md.days, i - 2)) {
 				int day = (i - 1) % 32 + 1;
 				dprintf(2, " - %d %s", day > NB_DAYS[(i - 1) / 32] ? NB_DAYS[(i - 1) / 32] : day, MONTHS_STR[(i - 1) / 32]);
 			}
@@ -112,7 +112,7 @@ void print_years(bitset years) {
 		} else if (set && !(GET_BIT(years, i))) {
 			set = 0;
 			ever = 1;
-			if (GET_BIT(years, i - 2))
+			if (i > 1 && GET_BIT(years, i - 2))
 				dprintf(2, " - %lu", i + 1899);
 			dprintf(2, "\n");
 		}

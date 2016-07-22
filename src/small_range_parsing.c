@@ -52,6 +52,7 @@ int parse_weekday_selector(weekday_selector *selector, char **s) {
 		}
 		while (**s == ' ') ++*s;
 		*s += 2;
+		while (**s == ' ') ++*s;
 		if (**s == '-') {
 			++*s;
 			while (**s == ' ') ++*s;
@@ -107,8 +108,10 @@ int parse_time_selector(time_selector *selector, char **s) {
 	do {
 		while (**s == ' ') ++*s;
 		if (!isdigit(**s)) {
-			if (!(hours_from | hours_to | mins_from | mins_to))
+			if (!(hours_from | hours_to | mins_from | mins_to)) {
+				set_subset(selector->time_range, 0, 24 * 60, true);
 				return (EMPTY);
+			}
 			printf("Invalid syntax: unexpected token.\n");
 			return (ERROR);
 		}

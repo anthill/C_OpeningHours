@@ -8,7 +8,6 @@
 #include "parsing.h"
 
 #ifdef STANDALONE
-void print_oh(opening_hours);
 
 int main(int ac, char **av) {
 	if (ac > 1)

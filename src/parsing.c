@@ -113,9 +113,7 @@ opening_hours build_opening_hours(char *s) {
 		if (parse_rule_sequence(&cur->rule, &s) == ERROR) {
 			printf("\n%s\n%s\n", entire_string, set_cursor(s - entire_string, cursor_str));
 			free_oh(oh);
-			if (prev)
-				prev->next_item = NULL;
-			break;
+			return (NULL);
 		} else {
 			printf("ok");
 		}

@@ -141,10 +141,9 @@ static bitset copy_bitset(bitset original) {
 
 static void set_subset(bitset set, size_t from, size_t to, bool state) {
 	state = !!state;
-	if (to > BITSET_SIZE(set))
-		to = BITSET_SIZE(set);
-	else
-		++to;
+	if (to > (BITSET_SIZE(set) - 1))
+		to = BITSET_SIZE(set) - 1;
+	++to;
 	if (from >= to)
 		return;
 	if (_B_INDEX(from) == _B_INDEX(to)) {
@@ -156,7 +155,8 @@ static void set_subset(bitset set, size_t from, size_t to, bool state) {
 		u_int i = _B_INDEX(from);
 		if (state) {
 			set[_B_INDEX(from)] |=    (~ (_word_t) 0 << _B_OFFSET(from));
-			set[_B_INDEX(to)]   |=   ~(~ (_word_t) 0 << _B_OFFSET(to));
+			if (_B_OFFSET(to))
+				set[_B_INDEX(to)]   |=   ~(~ (_word_t) 0 << _B_OFFSET(to));
 			while (++i < _B_INDEX(to))
 				_SET_INDEX(set, i);
 		} else {

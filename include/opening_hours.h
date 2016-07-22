@@ -1,6 +1,7 @@
 #ifndef OPENING_HOURS_H_
 # define OPENING_HOURS_H_
 
+# include <time.h>
 # include "bitset.h"
 
 /*
@@ -145,8 +146,9 @@ struct opening_hours {
 	rule_sequence rule;
 };
 
+int print_oh(opening_hours);
 opening_hours build_opening_hours(char *);
 void free_oh(opening_hours);
-void print_oh(opening_hours);
+int is_open(opening_hours, struct tm);
 
 #endif /* !OPENING_HOURS_H_ */

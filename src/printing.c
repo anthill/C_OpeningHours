@@ -122,12 +122,12 @@ void print_years(bitset years) {
 	dprintf(2, "\n");
 }
 
-void print_oh(opening_hours oh) {
+int print_oh(opening_hours oh) {
 	monthday_range *cur;
 
 	if (!oh) {
 		dprintf(2, "NULL\n");
-		return;
+		return (1);
 	}
 	cur = oh->rule.selector.wide_range.monthdays;
 
@@ -154,4 +154,5 @@ void print_oh(opening_hours oh) {
 	dprintf(2, "--------   STATE   --------\n\n");
 	dprintf(2, "   That's %s\n", oh->rule.state.type == RULE_OPEN ? "open" : "closed");
 	dprintf(2, "\n");
+	return (0);
 }

@@ -158,18 +158,20 @@ int parse_week_selector(bitset *weeks, char **s) {
 
 	while (**s == ' ') ++*s;
 
-	*weeks = Bitset(53);
+	*weeks = Bitset(54);
 	if (strstr(*s, "week ") != *s) {
 		set_subset(*weeks, 0, 52, true);
 		return (EMPTY);
 	}
+	*s += sizeof("week");
 	do {
 		while (**s == ' ') ++*s;
-		if ((weeknum = atoi(*s)) < 1 || weeknum > 53) {
+		if ((weeknum = atoi(*s)) < 1 || weeknum > 54) {
 			printf("Invalid syntax: week %d doesn't exist.\n", weeknum);
 			return (ERROR);
 		}
 		SET_BIT(*weeks, weeknum - 1, true);
+		while (isdigit(**s)) ++*s;
 	} while (strstr(*s, ",") == *s && *(++*s));
 	return (SUCCESS);
 }

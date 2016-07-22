@@ -19,9 +19,9 @@ void print_weeknum(bitset wn) {
 				dprintf(2, " - %lu", i);
 			dprintf(2, "\n");
 		}
-	} while (++i < 53);
+	} while (++i < 54);
 	if (set)
-		dprintf(2, " - 53\n");
+		dprintf(2, " - 54\n");
 	dprintf(2, "\n");
 }
 

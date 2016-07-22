@@ -1,4 +1,3 @@
-
 #include <time.h>
 #include "opening_hours.h"
 
@@ -16,17 +15,12 @@
            };
 */
 
-int get_week_id(struct tm date) {
-	return (0);
-}
-
 int is_open(opening_hours oh, struct tm date) {
 	selector_sequence selector = oh->rule.selector;
 
 	return ((selector.anyway
 				|| (GET_BIT(selector.wide_range.years, date.tm_year)
 					&& GET_BIT(selector.wide_range.monthdays->days, date.tm_mon * 32 + date.tm_mday - 1)
-					&& GET_BIT(selector.wide_range.weeks, get_week_id(date))
 					&& ((GET_BIT(selector.small_range.weekday.range, date.tm_wday)
 						&& GET_BIT(selector.small_range.hours.time_range, date.tm_hour * 60 + date.tm_min))
 					|| (GET_BIT(selector.small_range.weekday.range, date.tm_wday - 1 < 0 ? 6 : date.tm_wday - 1)

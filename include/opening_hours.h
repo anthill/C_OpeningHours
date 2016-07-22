@@ -1,9 +1,32 @@
 #ifndef OPENING_HOURS_H_
 # define OPENING_HOURS_H_
 
-# define COMMENT_SIZE 128
+# include "bitset.h"
 
-# include <bitset.h>
+/*
+ * Defines needed for parsing and restitution of the format:
+ */
+
+# define WEEKDAY_STR      ((char [][3]){"Mo", "Tu", "We", "Th", "Fr", "Sa", "Su"})
+# define MONTHS_STR      ((char [][4]){"Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"})
+# define NB_DAYS         ((int []){31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31})
+# define MONTHS_FULLSTR  ((char [][10]){\
+		"january", \
+		"february", \
+		"march", \
+		"april", \
+		"may", \
+		"june", \
+		"july", \
+		"august", \
+		"september", \
+		"october", \
+		"november", \
+		"december" \
+	})
+
+
+# define COMMENT_SIZE 128
 
 /*
  * Typedefs:

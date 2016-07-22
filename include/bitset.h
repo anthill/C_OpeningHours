@@ -3,6 +3,10 @@
 
 # include <stdlib.h>
 
+# ifdef _DEBUG
+/* Include stdio, needed to define printf calls in printf_bitset(). */
+#  include <stdio.h>
+# endif /* !_DEBUG */
 /*
  *
  * Bitset(size_t nbits):
@@ -229,7 +233,7 @@ static bitset bitwise_not(bitset set) {
 
 # ifdef _DEBUG
 
-int print_bitset(bitset set) {
+static int print_bitset(bitset set) {
 	size_t len = BITSET_SIZE(set),
 	       i = 0;
 

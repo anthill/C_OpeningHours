@@ -145,6 +145,7 @@ void print_years(bitset years) {
 }
 
 char *print_oh(opening_hours oh) {
+	opening_hours cur = oh;
 
 	result[0] = 0;
 	if (!oh) {
@@ -153,25 +154,29 @@ char *print_oh(opening_hours oh) {
 	if (oh->to_str)
 		return (oh->to_str);
 
-	snprintf(result + strlen(result), BUFFER_SIZE - strlen(result), "-------- SEPARATOR --------\n");
-	snprintf(result + strlen(result), BUFFER_SIZE - strlen(result), "  Separator: %d\n", oh->rule.separator);
-	snprintf(result + strlen(result), BUFFER_SIZE - strlen(result), "\n");
-	snprintf(result + strlen(result), BUFFER_SIZE - strlen(result), "-------- SELECTORS --------\n");
-	snprintf(result + strlen(result), BUFFER_SIZE - strlen(result), "  Anyway: %d\n", oh->rule.selector.anyway);
-	snprintf(result + strlen(result), BUFFER_SIZE - strlen(result), "\n");
-	snprintf(result + strlen(result), BUFFER_SIZE - strlen(result), "  WIDE_RANGE_SELECTOR -----\n");
-	snprintf(result + strlen(result), BUFFER_SIZE - strlen(result), "     Type: %d\n", oh->rule.selector.wide_range.type);
-	print_years(oh->rule.selector.wide_range.years);
-	print_months(oh->rule.selector.wide_range.monthdays);
-	print_weeknum(oh->rule.selector.wide_range.weeks);
-	snprintf(result + strlen(result), BUFFER_SIZE - strlen(result), "\n");
-	snprintf(result + strlen(result), BUFFER_SIZE - strlen(result), "  SMALL_RANGE_SELECTOR ----\n");
-	snprintf(result + strlen(result), BUFFER_SIZE - strlen(result), "     Type: %d\n", oh->rule.selector.wide_range.type);
-	print_weekday(oh->rule.selector.small_range.weekday);
-	print_hours(oh->rule.selector.small_range.hours);
-	snprintf(result + strlen(result), BUFFER_SIZE - strlen(result), "\n");
-	snprintf(result + strlen(result), BUFFER_SIZE - strlen(result), "--------   STATE   --------\n");
-	snprintf(result + strlen(result), BUFFER_SIZE - strlen(result), "   That's %s\n", oh->rule.state.type == RULE_OPEN ? "open" : "closed");
+	do {
+		snprintf(result + strlen(result), BUFFER_SIZE - strlen(result), "-------- SEPARATOR --------\n");
+		snprintf(result + strlen(result), BUFFER_SIZE - strlen(result), "  Separator: %d\n", cur->rule.separator);
+		snprintf(result + strlen(result), BUFFER_SIZE - strlen(result), "\n");
+		snprintf(result + strlen(result), BUFFER_SIZE - strlen(result), "-------- SELECTORS --------\n");
+		snprintf(result + strlen(result), BUFFER_SIZE - strlen(result), "  Anyway: %d\n", cur->rule.selector.anyway);
+		snprintf(result + strlen(result), BUFFER_SIZE - strlen(result), "\n");
+		snprintf(result + strlen(result), BUFFER_SIZE - strlen(result), "  WIDE_RANGE_SELECTOR -----\n");
+		snprintf(result + strlen(result), BUFFER_SIZE - strlen(result), "     Type: %d\n", cur->rule.selector.wide_range.type);
+		print_years(cur->rule.selector.wide_range.years);
+		print_months(cur->rule.selector.wide_range.monthdays);
+		print_weeknum(cur->rule.selector.wide_range.weeks);
+		snprintf(result + strlen(result), BUFFER_SIZE - strlen(result), "\n");
+		snprintf(result + strlen(result), BUFFER_SIZE - strlen(result), "  SMALL_RANGE_SELECTOR ----\n");
+		snprintf(result + strlen(result), BUFFER_SIZE - strlen(result), "     Type: %d\n", cur->rule.selector.wide_range.type);
+		print_weekday(cur->rule.selector.small_range.weekday);
+		print_hours(cur->rule.selector.small_range.hours);
+		snprintf(result + strlen(result), BUFFER_SIZE - strlen(result), "\n");
+		snprintf(result + strlen(result), BUFFER_SIZE - strlen(result), "--------   STATE   --------\n");
+		snprintf(result + strlen(result), BUFFER_SIZE - strlen(result), "   That's %s\n\n", cur->rule.state.type == RULE_OPEN ? "open" : "closed");
+		if ((cur = cur->next_item))
+			snprintf(result + strlen(result), BUFFER_SIZE - strlen(result), "====================================\n\n");
+	} while (cur);
 	oh->to_str = strdup(result);
 	return (oh->to_str);
 }

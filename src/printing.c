@@ -80,13 +80,13 @@ void print_weekday(weekday_selector wd) {
 		snprintf(result + strlen(result), BUFFER_SIZE - strlen(result), " - %s\n", WEEKDAY_STR[6]);
 }
 
-void print_months(monthday_range md, int ever) {
+void print_months(monthday_range md) {
 	size_t i = 0,
 	       set = 0,
+	       ever = 0,
 	       from;
 
-	if (!ever)
-		snprintf(result + strlen(result), BUFFER_SIZE - strlen(result), "     Monthdays:");
+	snprintf(result + strlen(result), BUFFER_SIZE - strlen(result), "     Monthdays:");
 	do {
 		if (!set && GET_BIT(md.days, i)) {
 			set = 1;
@@ -99,11 +99,13 @@ void print_months(monthday_range md, int ever) {
 			set = 0;
 			ever = 1;
 			if (i > 1 && GET_BIT(md.days, i - 2)) {
-				int day = i % 32 + 1;
-				if (day < NB_DAYS[i / 32])
-					snprintf(result + strlen(result), BUFFER_SIZE - strlen(result), " - %d %s", day > NB_DAYS[i / 32] ? NB_DAYS[i / 32] : day, MONTHS_STR[i / 32]);
-				else if (strcmp(MONTHS_STR[i / 32], MONTHS_STR[from / 32]))
-					snprintf(result + strlen(result), BUFFER_SIZE - strlen(result), " - %s", MONTHS_STR[i / 32]);
+				int day = (i - 1) % 32 + 2;
+				if (day <= NB_DAYS[i / 32])
+					snprintf(result + strlen(result), BUFFER_SIZE - strlen(result), " - %d %s", day > NB_DAYS[i / 32] ? NB_DAYS[i / 32] : day, MONTHS_STR[(i - 1) / 32]);
+				else if (strcmp(MONTHS_STR[(i - 1) / 32], MONTHS_STR[from / 32]))
+					snprintf(result + strlen(result), BUFFER_SIZE - strlen(result), " - %s", MONTHS_STR[(i - 1) / 32]);
+			} else if (!(i % 32)) {
+				snprintf(result + strlen(result), BUFFER_SIZE, " %lu", i % 32);
 			}
 			snprintf(result + strlen(result), BUFFER_SIZE - strlen(result), "\n");
 		}
@@ -135,13 +137,11 @@ void print_years(bitset years) {
 }
 
 char *print_oh(opening_hours oh) {
-	monthday_range *cur;
 
 	result[0] = 0;
 	if (!oh) {
 		return (NULL);
 	}
-	cur = oh->rule.selector.wide_range.monthdays;
 
 	snprintf(result + strlen(result), BUFFER_SIZE - strlen(result), "-------- SEPARATOR --------\n");
 	snprintf(result + strlen(result), BUFFER_SIZE - strlen(result), "  Separator: %d\n", oh->rule.separator);
@@ -152,9 +152,7 @@ char *print_oh(opening_hours oh) {
 	snprintf(result + strlen(result), BUFFER_SIZE - strlen(result), "  WIDE_RANGE_SELECTOR -----\n");
 	snprintf(result + strlen(result), BUFFER_SIZE - strlen(result), "     Type: %d\n", oh->rule.selector.wide_range.type);
 	print_years(oh->rule.selector.wide_range.years);
-	do {
-		print_months(*cur, cur != oh->rule.selector.wide_range.monthdays);
-	} while ((++cur)->days);
+	print_months(oh->rule.selector.wide_range.monthdays);
 	print_weeknum(oh->rule.selector.wide_range.weeks);
 	snprintf(result + strlen(result), BUFFER_SIZE - strlen(result), "\n");
 	snprintf(result + strlen(result), BUFFER_SIZE - strlen(result), "  SMALL_RANGE_SELECTOR ----\n");

@@ -55,37 +55,25 @@ int parse_year_range(bitset *years, char **s) {
 	return (SUCCESS);
 }
 
-int parse_monthday_range(monthday_range **monthdays, char **s) {
-	monthday_range* current;
+int parse_monthday_range(monthday_range *monthday, char **s) {
 	size_t nb_ranges = 0;
 	int month_id, month_to,
 	    daynum = 0, dayto = 0;
 
 	while (**s == ' ') ++*s;
 
-	if (!(*monthdays = calloc(++nb_ranges, sizeof(*current)))) {
-		printf("FATAL ERROR: cannot allocate %lu bytes!\nMaybe memory is full?", nb_ranges * sizeof(*current));
-		exit(2);
-	}
 	if (get_month_id(*s) == 12) {
-		if (!(*monthdays = realloc(*monthdays, (nb_ranges + 1) * sizeof(*current)))) {
-			printf("FATAL ERROR: cannot allocate %lu bytes!\nMaybe memory is full?", nb_ranges * sizeof(*current));
-			exit(2);
-		}
-		(*monthdays)->days = Bitset(12 * 32);
-		set_subset((*monthdays)->days, 0, 12 * 32, true);
-		bzero(*monthdays + nb_ranges, sizeof(*current));
+		monthday->days = Bitset(12 * 32);
+		set_subset(monthday->days, 0, 12 * 32, true);
 		return (EMPTY);
 	}
+	monthday->days = Bitset(12 * 32);
 	do {
-		current = *monthdays + nb_ranges - 1;
-		bzero(current, sizeof(*current));
-		current->days = Bitset(12 * 32);
 		while (**s == ' ') ++*s;
 		if (strstr(*s, "easter ") == *s) {
 			*s += sizeof("easter");
 			while (**s == ' ') ++*s;
-			current->easter = true;
+			monthday->easter = true;
 			if (**s == '-') {
 				printf("Unsupported syntax: ranges including easter aren't allowed here, aborting.\n");
 				return (ERROR);
@@ -122,34 +110,28 @@ int parse_monthday_range(monthday_range **monthdays, char **s) {
 			while (**s == ' ') ++*s;
 			if ((dayto = atoi(*s))) {
 				if (dayto > NB_DAYS[month_to]) {
-					printf("Invalid range: day %d doesn't exist for %s.\n", daynum, MONTHS_FULLSTR[month_id]);
+					printf("Invalid range: day %d doesn't exist for %s.\n", dayto, MONTHS_FULLSTR[month_id]);
 					return (ERROR);
 				}
 				while (isdigit(**s)) ++*s;
 			} else {
-				dayto = 31;
+				dayto = 32;
 			}
 			daynum = !daynum ? 1 : daynum;
-			if (month_to > month_id) {
-				set_subset(current->days, month_id * 32 + daynum - 1, month_to * 32 + dayto - 1, true);
+			if (month_to >= month_id) {
+				set_subset(monthday->days, month_id * 32 + daynum - 1, month_to * 32 + dayto - 2, true);
 			} else if (month_to == month_id && dayto < daynum) {
-				set_subset(current->days, 0, 12 * 32, true);
-				set_subset(current->days, month_to * 32 + dayto, month_id * 32 + daynum - 2, false);
+				set_subset(monthday->days, month_to * 32 + dayto - 1, 12 * 32, true);
+				set_subset(monthday->days, 0, month_id * 32 + daynum - 1, true);
 			}
 			while (isdigit(**s)) ++*s;
 		} else {
 			if (!daynum)
-				set_subset(current->days, month_id * 32, month_id * 32 + 30, true);
+				set_subset(monthday->days, month_id * 32, month_id * 32 + 31, true);
 			else
-				SET_BIT(current->days, month_id * 32 + daynum - 1, true);
+				SET_BIT(monthday->days, month_id * 32 + daynum - 1, true);
 		}
-		if (!(*monthdays = realloc(*monthdays, ++nb_ranges * sizeof(*current)))) {
-			printf("FATAL ERROR: cannot allocate %lu bytes!\nMaybe memory is full?", nb_ranges * sizeof(*current));
-			exit(2);
-		}
-
 	} while (strstr(*s, ",") == *s && *(++*s));
-	bzero(*monthdays + nb_ranges - 1, sizeof(*current));
 	return (SUCCESS);
 }
 

@@ -37,7 +37,7 @@
 char *set_cursor(int, char *);
 char *set_cursor(int, char *);
 int match(char *, char *);
-int parse_monthday_range(monthday_range **, char **);
+int parse_monthday_range(monthday_range *, char **);
 int parse_rule_modifier(rule_modifier *, char **);
 int parse_rule_sequence(rule_sequence *, char **);
 int parse_selector_sequence(selector_sequence *, char **);

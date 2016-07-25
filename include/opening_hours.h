@@ -93,7 +93,7 @@ struct wide_range_selector {
 	union {
 		struct {
 			bitset years;
-			monthday_range* monthdays;
+			monthday_range monthdays;
 			bitset weeks;
 		};
 		char comment[COMMENT_SIZE];

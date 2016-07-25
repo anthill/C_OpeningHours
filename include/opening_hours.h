@@ -146,7 +146,7 @@ struct opening_hours {
 	rule_sequence rule;
 };
 
-int print_oh(opening_hours);
+char *print_oh(opening_hours);
 opening_hours build_opening_hours(char *);
 void free_oh(opening_hours);
 int is_open(opening_hours, struct tm);

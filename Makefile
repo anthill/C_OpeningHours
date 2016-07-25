@@ -1,6 +1,6 @@
 SHELL = /bin/bash
 
-NAME = ./C_OpeningHours
+NAME = ./libopening-hours
 
 P_INC = ./include/
 
@@ -19,7 +19,7 @@ MOK = echo -e "\r\033[1;37m[   \033[32mOK   \033[37m] \033[0m$$file"
 
 MERR = echo -e "\r\033[1;37m[ \033[31mFAILED \033[37m] \033[0m$$file"
 
-CFLAGS = -Iinclude/ -std=c99 -g
+CFLAGS = -Iinclude/ -std=c99 -W -Wall -Wextra
 
 LDFLAGS = -Llib/ -Iinclude/
 
@@ -35,26 +35,39 @@ MBIN = echo "Compiling binary..."
 
 MOBJS = echo "Compiling objects..."
 
-all:	lib
+all:
+	@set -o pipefail ; $(MAKE) --no-print-directory lib -j4 | sed -r ':a;N;$$!ba;s/(make\[[0-9]+\]|Makefile)[^\n]*/ /g;s/\n \n/\n/g' ; \
+		if [ $${PIPESTATUS[0]} -gt "0" ] ; then \
+			exit 1 ; \
+		fi ;
+
+install:
+	mv $(NAME).so /usr/lib/
 
 standalone:
 	@$(MAKE) clean | sed 's/^make\[[0-9]\].*$$//'
-	@$(MAKE) $(NAME) -j4 CFLAGS="$(CFLAGS) -DSTANDALONE" | sed 's/^make\[[0-9]\].*$$//'
+	@$(MAKE) $(NAME) -j4 CFLAGS="$(CFLAGS) -DSTANDALONE" | sed -r ':a;N;$$!ba;s/\n(make\[[0-9]\]|Makefile)[^\n]*//g'
 	@$(MAKE) clean | sed 's/^make\[[0-9]\].*$$//'
 
 lib:
-	@$(MAKE) $(NAME).so -j4 NAME="$(NAME).so" CC="gcc -shared -fPIC" CFLAGS="$(CFLAGS)" LDFLAGS="$(LDFLAGS)" | sed 's/^make\[[0-9]\].*$$//'
+	@echo
+	@set -o pipefail ; $(MAKE) --no-print-directory $(NAME).so -j4 NAME="$(NAME).so" CC="gcc -shared -fPIC" CFLAGS="$(CFLAGS)" LDFLAGS="$(LDFLAGS)" 2>&1 | sed -r ':a;N;$$!ba;s/\n(make\[[0-9]\]|Makefile)[^\n]*//g' ; \
+		if [ $${PIPESTATUS[0]} -gt "0" ] ; then \
+			exit 1 ; \
+		fi ;
+	@echo -e "\n   Done\n"
 
 $(NAME):	$(CC_OBJS)
 	@file="$(NAME)" ; export relink="false" ; \
 	for i in $(OBJS) ; do \
 		if [[ "$$i" -nt "$(NAME)" ]] ; then export relink="true" ; fi ;\
 	done ; \
+	echo ; \
 	if [ "$$relink" = "false" ] ; then $(MSKIP) ; exit 0 ; fi ; \
 	$(MWAIT) ; $(CC) $(CFLAGS) $(LDFLAGS) -o $(NAME) $(OBJS) && $(MOK) || $(MERR)
 
 test:
-	@$(MAKE) $(NAME)-test -j4 NAME=$(NAME)-test CFLAGS="$(CFLAGS) -DDEBUG" LDFLAGS="$(LDFLAGS) -lcunit" SRCS="$(SRCS) ./src/tests.c" | sed 's/^make\[[0-9]\].*$$//'
+	@$(MAKE) $(NAME)-test -j4 NAME=$(NAME)-test CFLAGS="$(CFLAGS) -DDEBUG" LDFLAGS="$(LDFLAGS) -lcunit" SRCS="$(SRCS) ./src/tests.c" | sed -r ':a;N;$$!ba;s/\n(make\[[0-9]\]|Makefile)[^\n]*//g'
 	@./$(NAME)-test
 
 %.occ:
@@ -69,10 +82,13 @@ test:
 	@$(CC) $(CFLAGS) -o $@ -c $<
 
 clean:
+	@echo
 	@file="Cleaning objects..." ; $(MWAIT) ; $(RM) $(OBJS) && $(MOK) || $(MERR)
+	@echo
 
 fclean:	clean
 	@file="Cleaning $(NAME)" ; $(MWAIT) ; $(RM) $(NAME) $(NAME).so $(NAME)-test && $(MOK) || $(MERR)
+	@echo
 
 re:	fclean all
 

@@ -112,8 +112,6 @@ opening_hours build_opening_hours(char *s) {
 			printf("\n%s\n%s\n", entire_string, set_cursor(s - entire_string, cursor_str));
 			free_oh(oh);
 			return (NULL);
-		} else {
-			printf("ok");
 		}
 	} while (*s && *++s);
 	return (oh);

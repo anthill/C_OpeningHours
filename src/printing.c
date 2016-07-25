@@ -1,28 +1,35 @@
-
-#include "dprintf.h"
+#include <string.h>
+#include <stdio.h>
 #include "opening_hours.h"
+
+#ifndef BUFFER_SIZE
+# define BUFFER_SIZE 2048
+#endif
+
+static char result[BUFFER_SIZE] = {0};
+
+char *strdup(const char *);
 
 void print_weeknum(bitset wn) {
 	size_t i = 0,
 		   set = 0,
 		   ever = 0;
 
-	dprintf(2, "     Weeknums:");
+	snprintf(result + strlen(result), BUFFER_SIZE - strlen(result), "     Weeknums:");
 	do {
 		if (!set && GET_BIT(wn, i)) {
 			set = 1;
-			dprintf(2, "%s %lu", ever ? "                 " : "  ", i + 1);
+			snprintf(result + strlen(result), BUFFER_SIZE - strlen(result), "%s %lu", ever ? "                 " : "  ", i + 1);
 		} else if (set && !(GET_BIT(wn, i))) {
 			set = 0;
 			ever = 1;
 			if (i > 1 && GET_BIT(wn, i - 2))
-				dprintf(2, " - %lu", i);
-			dprintf(2, "\n");
+				snprintf(result + strlen(result), BUFFER_SIZE - strlen(result), " - %lu", i);
+			snprintf(result + strlen(result), BUFFER_SIZE - strlen(result), "\n");
 		}
 	} while (++i < 54);
 	if (set)
-		dprintf(2, " - 54\n");
-	dprintf(2, "\n");
+		snprintf(result + strlen(result), BUFFER_SIZE - strlen(result), " - 54\n");
 }
 
 void print_hours(time_selector ts) {
@@ -31,23 +38,22 @@ void print_hours(time_selector ts) {
 		   ever = 0;
 
 	if (!ever)
-		dprintf(2, "     Hours:");
+		snprintf(result + strlen(result), BUFFER_SIZE - strlen(result), "     Hours:");
 	do {
 		if (!set && GET_BIT(ts.time_range, i)) {
 			set = 1;
-			dprintf(2, "%s %02lu:%02lu", ever ? "                 " : "      ", i / 60, i % 60);
+			snprintf(result + strlen(result), BUFFER_SIZE - strlen(result), "%s %02lu:%02lu", ever ? "                 " : "      ", i / 60, i % 60);
 		} else if (set && !(GET_BIT(ts.time_range, i))) {
 			set = 0;
 			ever = 1;
 			if (i > 1 && GET_BIT(ts.time_range, i - 2)) {
-				dprintf(2, " - %02lu:%02lu", i / 60, i % 60);
+				snprintf(result + strlen(result), BUFFER_SIZE - strlen(result), " - %02lu:%02lu", i / 60, i % 60);
 			}
-			dprintf(2, "\n");
+			snprintf(result + strlen(result), BUFFER_SIZE - strlen(result), "\n");
 		}
 	} while (++i < 24 * 60);
 	if (set)
-		dprintf(2, "+\n");
-	dprintf(2, "\n");
+		snprintf(result + strlen(result), BUFFER_SIZE - strlen(result), "+\n");
 }
 
 void print_weekday(weekday_selector wd) {
@@ -56,47 +62,54 @@ void print_weekday(weekday_selector wd) {
 		   ever = 0;
 
 	if (!ever)
-		dprintf(2, "     Weekdays:");
+		snprintf(result + strlen(result), BUFFER_SIZE - strlen(result), "     Weekdays:");
 	do {
 		if (!set && GET_BIT(wd.day, i)) {
 			set = 1;
-			dprintf(2, "%s %s", ever ? "                 " : "   ", WEEKDAY_STR[i]);
+			snprintf(result + strlen(result), BUFFER_SIZE - strlen(result), "%s %s", ever ? "                 " : "   ", WEEKDAY_STR[i]);
 		} else if (set && !(GET_BIT(wd.day, i))) {
 			set = 0;
 			ever = 1;
 			if (i > 1 && GET_BIT(wd.day, i - 2)) {
-				dprintf(2, " - %s", WEEKDAY_STR[(i - 1)]);
+				snprintf(result + strlen(result), BUFFER_SIZE - strlen(result), " - %s", WEEKDAY_STR[(i - 1)]);
 			}
-			dprintf(2, "\n");
+			snprintf(result + strlen(result), BUFFER_SIZE - strlen(result), "\n");
 		}
 	} while (++i < 7);
 	if (set)
-		dprintf(2, " - %s\n", WEEKDAY_STR[6]);
-	dprintf(2, "\n");
+		snprintf(result + strlen(result), BUFFER_SIZE - strlen(result), " - %s\n", WEEKDAY_STR[6]);
 }
 
 void print_months(monthday_range md, int ever) {
 	size_t i = 0,
-		   set = 0;
+	       set = 0,
+	       from;
 
 	if (!ever)
-		dprintf(2, "     Monthdays:");
+		snprintf(result + strlen(result), BUFFER_SIZE - strlen(result), "     Monthdays:");
 	do {
 		if (!set && GET_BIT(md.days, i)) {
 			set = 1;
-			dprintf(2, "%s %lu %s", ever ? "                " : " ", i % 32 + 1, MONTHS_STR[i / 32]);
+			from = i;
+			if (i % 32)
+				snprintf(result + strlen(result), BUFFER_SIZE - strlen(result), "%s %lu %s", ever ? "                " : " ", i % 32 + 1, MONTHS_STR[i / 32]);
+			else
+				snprintf(result + strlen(result), BUFFER_SIZE - strlen(result), "%s %s", ever ? "                " : " ", MONTHS_STR[i / 32]);
 		} else if (set && !(GET_BIT(md.days, i))) {
 			set = 0;
 			ever = 1;
 			if (i > 1 && GET_BIT(md.days, i - 2)) {
-				int day = (i - 1) % 32 + 1;
-				dprintf(2, " - %d %s", day > NB_DAYS[(i - 1) / 32] ? NB_DAYS[(i - 1) / 32] : day, MONTHS_STR[(i - 1) / 32]);
+				int day = i % 32 + 1;
+				if (day < NB_DAYS[i / 32])
+					snprintf(result + strlen(result), BUFFER_SIZE - strlen(result), " - %d %s", day > NB_DAYS[i / 32] ? NB_DAYS[i / 32] : day, MONTHS_STR[i / 32]);
+				else if (strcmp(MONTHS_STR[i / 32], MONTHS_STR[from / 32]))
+					snprintf(result + strlen(result), BUFFER_SIZE - strlen(result), " - %s", MONTHS_STR[i / 32]);
 			}
+			snprintf(result + strlen(result), BUFFER_SIZE - strlen(result), "\n");
 		}
 	} while (++i < 32 * 12);
 	if (set)
-		dprintf(2, " - %s\n", MONTHS_STR[11]);
-	dprintf(2, "\n");
+		snprintf(result + strlen(result), BUFFER_SIZE - strlen(result), " - %s\n", MONTHS_STR[11]);
 }
 
 void print_years(bitset years) {
@@ -104,55 +117,52 @@ void print_years(bitset years) {
 		   set = 0,
 		   ever = 0;
 
-	dprintf(2, "     Years:");
+	snprintf(result + strlen(result), BUFFER_SIZE - strlen(result), "     Years:");
 	do {
 		if (!set && GET_BIT(years, i)) {
 			set = 1;
-			dprintf(2, "%s %lu", ever ? "                " : "     ", i + 1900);
+			snprintf(result + strlen(result), BUFFER_SIZE - strlen(result), "%s %lu", ever ? "                " : "     ", i + 1900);
 		} else if (set && !(GET_BIT(years, i))) {
 			set = 0;
 			ever = 1;
 			if (i > 1 && GET_BIT(years, i - 2))
-				dprintf(2, " - %lu", i + 1899);
-			dprintf(2, "\n");
+				snprintf(result + strlen(result), BUFFER_SIZE - strlen(result), " - %lu", i + 1899);
+			snprintf(result + strlen(result), BUFFER_SIZE - strlen(result), "\n");
 		}
 	} while (++i < 1024);
 	if (set)
-		dprintf(2, "+\n");
-	dprintf(2, "\n");
+		snprintf(result + strlen(result), BUFFER_SIZE - strlen(result), "+\n");
 }
 
-int print_oh(opening_hours oh) {
+char *print_oh(opening_hours oh) {
 	monthday_range *cur;
 
+	result[0] = 0;
 	if (!oh) {
-		dprintf(2, "NULL\n");
-		return (1);
+		return (NULL);
 	}
 	cur = oh->rule.selector.wide_range.monthdays;
 
-	dprintf(2, "\n\n-------- SEPARATOR --------\n");
-	dprintf(2, "  Separator: %d\n", oh->rule.separator);
-	dprintf(2, "\n");
-	dprintf(2, "-------- SELECTORS --------\n\n");
-	dprintf(2, "  Anyway: %d\n", oh->rule.selector.anyway);
-	dprintf(2, "\n");
-	dprintf(2, "  WIDE_RANGE_SELECTOR -----\n\n");
-	dprintf(2, "     Type: %d\n\n", oh->rule.selector.wide_range.type);
+	snprintf(result + strlen(result), BUFFER_SIZE - strlen(result), "-------- SEPARATOR --------\n");
+	snprintf(result + strlen(result), BUFFER_SIZE - strlen(result), "  Separator: %d\n", oh->rule.separator);
+	snprintf(result + strlen(result), BUFFER_SIZE - strlen(result), "\n");
+	snprintf(result + strlen(result), BUFFER_SIZE - strlen(result), "-------- SELECTORS --------\n");
+	snprintf(result + strlen(result), BUFFER_SIZE - strlen(result), "  Anyway: %d\n", oh->rule.selector.anyway);
+	snprintf(result + strlen(result), BUFFER_SIZE - strlen(result), "\n");
+	snprintf(result + strlen(result), BUFFER_SIZE - strlen(result), "  WIDE_RANGE_SELECTOR -----\n");
+	snprintf(result + strlen(result), BUFFER_SIZE - strlen(result), "     Type: %d\n", oh->rule.selector.wide_range.type);
 	print_years(oh->rule.selector.wide_range.years);
 	do {
 		print_months(*cur, cur != oh->rule.selector.wide_range.monthdays);
 	} while ((++cur)->days);
-	dprintf(2, "\n");
 	print_weeknum(oh->rule.selector.wide_range.weeks);
-	dprintf(2, "\n");
-	dprintf(2, "  SMALL_RANGE_SELECTOR ----\n\n");
-	dprintf(2, "     Type: %d\n\n", oh->rule.selector.wide_range.type);
+	snprintf(result + strlen(result), BUFFER_SIZE - strlen(result), "\n");
+	snprintf(result + strlen(result), BUFFER_SIZE - strlen(result), "  SMALL_RANGE_SELECTOR ----\n");
+	snprintf(result + strlen(result), BUFFER_SIZE - strlen(result), "     Type: %d\n", oh->rule.selector.wide_range.type);
 	print_weekday(oh->rule.selector.small_range.weekday);
 	print_hours(oh->rule.selector.small_range.hours);
-	dprintf(2, "\n");
-	dprintf(2, "--------   STATE   --------\n\n");
-	dprintf(2, "   That's %s\n", oh->rule.state.type == RULE_OPEN ? "open" : "closed");
-	dprintf(2, "\n");
-	return (0);
+	snprintf(result + strlen(result), BUFFER_SIZE - strlen(result), "\n");
+	snprintf(result + strlen(result), BUFFER_SIZE - strlen(result), "--------   STATE   --------\n");
+	snprintf(result + strlen(result), BUFFER_SIZE - strlen(result), "   That's %s\n", oh->rule.state.type == RULE_OPEN ? "open" : "closed");
+	return (strdup(result));
 }

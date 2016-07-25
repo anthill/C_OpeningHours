@@ -1,21 +1,6 @@
-#include <time.h>
 #include "opening_hours.h"
 
-/*
-           struct tm {
-               int tm_sec;    Seconds (0-60)
-               int tm_min;    Minutes (0-59)
-               int tm_hour;   Hours (0-23)
-               int tm_mday;   Day of the month (1-31)
-               int tm_mon;    Month (0-11)
-               int tm_year;   Year - 1900
-               int tm_wday;   Day of the week (0-6, Sunday = 0)
-               int tm_yday;   Day in the year (0-365, 1 Jan = 0)
-               int tm_isdst;  Daylight saving time
-           };
-*/
-
-int is_open(opening_hours oh, struct tm date) {
+int is_open(opening_hours oh, when date) {
 	selector_sequence selector = oh->rule.selector;
 
 	return ((selector.anyway
@@ -28,3 +13,10 @@ int is_open(opening_hours oh, struct tm date) {
 			&& oh->rule.state.type == RULE_OPEN);
 }
 
+int is_open_time(opening_hours oh, struct tm date) {
+	return (is_open(oh, *((when *)&date + sizeof(date.tm_sec))));
+}
+
+int is_open_expended(opening_hours oh, int min, int hour, int day, int month, int year, int day_of_week, int day_of_year) {
+	return (is_open(oh, (when){{{min, hour, day, month, year, day_of_week, day_of_year}}}));
+}

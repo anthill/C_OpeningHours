@@ -41,8 +41,15 @@ all:
 			exit 1 ; \
 		fi ;
 
-install:
+install:	lib
 	cp $(NAME).so /usr/lib/
+	cp ./include/opening_hours.h /usr/include
+	cp ./include/bitset.h /usr/include
+
+uninstall:
+	rm /usr/lib/$(NAME).so
+	rm /usr/include/opening_hours.h
+	rm /usr/include/bitset.h
 
 standalone:
 	@$(MAKE) clean | sed 's/^make\[[0-9]\].*$$//'

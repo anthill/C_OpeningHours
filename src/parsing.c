@@ -94,8 +94,7 @@ char *set_cursor(int pos, char *str) {
 
 opening_hours build_opening_hours(char *s) {
 	opening_hours oh = calloc(1, sizeof(*oh)),
-		      cur = oh,
-		      prev = NULL;
+		      cur = oh;
 	int it = 0;
 	char *entire_string = s,
 	     cursor_str[strlen(s) * 2 + 1];
@@ -107,7 +106,6 @@ opening_hours build_opening_hours(char *s) {
 	oh->rule.separator = SEP_HEAD;
 	do {
 		if (it++) {
-			prev = cur;
 			cur = (cur->next_item = calloc(1, sizeof(*oh)));
 		}
 		if (parse_rule_sequence(&cur->rule, &s) == ERROR) {

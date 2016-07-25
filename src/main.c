@@ -10,8 +10,16 @@
 #ifdef STANDALONE
 
 int main(int ac, char **av) {
-	if (ac > 1)
-		printf("%s", print_oh(build_opening_hours(av[1])));
+	char *printed;
+	opening_hours oh;
+
+	if (ac > 1) {
+		oh = build_opening_hours(av[1]);
+		printed = print_oh(oh);
+		printf("%s", printed);
+		free_oh(oh);
+		free(printed);
+	}
 	return (0);
 }
 #endif /* !STANDALONE */

@@ -56,7 +56,6 @@ int parse_year_range(bitset *years, char **s) {
 }
 
 int parse_monthday_range(monthday_range *monthday, char **s) {
-	size_t nb_ranges = 0;
 	int month_id, month_to,
 	    daynum = 0, dayto = 0;
 

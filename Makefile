@@ -42,7 +42,7 @@ all:
 		fi ;
 
 install:
-	mv $(NAME).so /usr/lib/
+	cp $(NAME).so /usr/lib/
 
 standalone:
 	@$(MAKE) clean | sed 's/^make\[[0-9]\].*$$//'

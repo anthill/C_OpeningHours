@@ -82,20 +82,25 @@ int parse_rule_sequence(rule_sequence *seq, char **s) {
 }
 
 void free_oh(opening_hours oh) {
-	selector_sequence selector = oh->rule.selector;
-
 	if (!oh)
 		return;
-	del_bitset(selector.wide_range.years);
-	del_bitset(selector.wide_range.weeks);
-	del_bitset(selector.wide_range.monthdays.days);
-	del_bitset(selector.small_range.weekday.range);
-	del_bitset(selector.small_range.hours.time_range);
-	del_bitset(selector.small_range.hours.extended_time_range);
+
+	selector_sequence selector = oh->rule.selector;
+	if (selector.wide_range.years)
+		del_bitset(selector.wide_range.years);
+	if (selector.wide_range.weeks)
+		del_bitset(selector.wide_range.weeks);
+	if (selector.wide_range.monthdays.days)
+		del_bitset(selector.wide_range.monthdays.days);
+	if (selector.small_range.weekday.range)
+		del_bitset(selector.small_range.weekday.range);
+	if (selector.small_range.hours.time_range)
+		del_bitset(selector.small_range.hours.time_range);
+	if (selector.small_range.hours.extended_time_range)
+		del_bitset(selector.small_range.hours.extended_time_range);
 	if (oh->to_str)
 		free(oh->to_str);
-	if (oh->next_item)
-		free_oh(oh->next_item);
+	free_oh(oh->next_item);
 	free(oh);
 }
 
@@ -124,7 +129,7 @@ opening_hours build_opening_hours(char *s) {
 		}
 		if (parse_rule_sequence(&cur->rule, &s) == ERROR) {
 			printf("\n%s\n%s\n", entire_string, set_cursor(s - entire_string, cursor_str));
-			free_oh(oh);
+			free_oh(cur);
 			return (NULL);
 		}
 	} while (*s && *++s);

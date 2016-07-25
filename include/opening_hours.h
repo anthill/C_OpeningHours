@@ -144,6 +144,7 @@ struct opening_hours {
 	opening_hours next_item;
 	bool aligned;
 	rule_sequence rule;
+	char *to_str;
 };
 
 typedef struct when {

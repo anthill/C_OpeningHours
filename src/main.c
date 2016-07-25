@@ -18,7 +18,6 @@ int main(int ac, char **av) {
 		printed = print_oh(oh);
 		printf("%s", printed);
 		free_oh(oh);
-		free(printed);
 	}
 	return (0);
 }

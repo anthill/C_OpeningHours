@@ -92,6 +92,8 @@ void free_oh(opening_hours oh) {
 	del_bitset(selector.small_range.weekday.range);
 	del_bitset(selector.small_range.hours.time_range);
 	del_bitset(selector.small_range.hours.extended_time_range);
+	if (oh->to_str)
+		free(oh->to_str);
 	if (oh->next_item)
 		free_oh(oh->next_item);
 	free(oh);

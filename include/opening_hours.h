@@ -155,9 +155,8 @@ typedef struct when {
 			int tm_mon;    /* Month (0-11)                         */
 			int tm_year;   /* Year - 1900                          */
 			int tm_wday;   /* Day of the week (0-6, Sunday = 0)    */
-			int tm_yday;   /* Day in the year (0-365, 1 Jan = 0)   */
 		};
-		int fields[7];
+		int fields[6];
 	};
 } when;
 
@@ -167,6 +166,6 @@ opening_hours build_opening_hours(char *);
 void free_oh(opening_hours);
 int is_open(opening_hours, when tm);
 int is_open_time(opening_hours, struct tm);
-int is_open_expended(opening_hours, int, int, int, int, int, int, int);
+int is_open_expended(opening_hours, int, int, int, int, int, int);
 
 #endif /* !OPENING_HOURS_H_ */

@@ -17,6 +17,6 @@ int is_open_time(opening_hours oh, struct tm date) {
 	return (is_open(oh, *((when *)&date + sizeof(date.tm_sec))));
 }
 
-int is_open_expended(opening_hours oh, int min, int hour, int day, int month, int year, int day_of_week, int day_of_year) {
-	return (is_open(oh, (when){{{min, hour, day, month, year, day_of_week, day_of_year}}}));
+int is_open_expended(opening_hours oh, int min, int hour, int day, int month, int year, int day_of_week) {
+	return (is_open(oh, (when){{{min, hour, day, month, year, day_of_week}}}));
 }

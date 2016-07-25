@@ -61,12 +61,11 @@ int parse_monthday_range(monthday_range *monthday, char **s) {
 
 	while (**s == ' ') ++*s;
 
+	monthday->days = Bitset(12 * 32);
 	if (get_month_id(*s) == 12) {
-		monthday->days = Bitset(12 * 32);
 		set_subset(monthday->days, 0, 12 * 32, true);
 		return (EMPTY);
 	}
-	monthday->days = Bitset(12 * 32);
 	do {
 		while (**s == ' ') ++*s;
 		if (strstr(*s, "easter ") == *s) {
@@ -117,11 +116,11 @@ int parse_monthday_range(monthday_range *monthday, char **s) {
 				dayto = 32;
 			}
 			daynum = !daynum ? 1 : daynum;
-			if (month_to >= month_id) {
+			if (month_to > month_id || (month_to == month_id && dayto >= daynum)) {
 				set_subset(monthday->days, month_id * 32 + daynum - 1, month_to * 32 + dayto - 2, true);
-			} else if (month_to == month_id && dayto < daynum) {
-				set_subset(monthday->days, month_to * 32 + dayto - 1, 12 * 32, true);
-				set_subset(monthday->days, 0, month_id * 32 + daynum - 1, true);
+			} else {
+				set_subset(monthday->days, month_id * 32 + daynum - 1, 12 * 32, true);
+				set_subset(monthday->days, 0, month_to * 32 + dayto - 1, true);
 			}
 			while (isdigit(**s)) ++*s;
 		} else {

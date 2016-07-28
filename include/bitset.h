@@ -46,6 +46,9 @@
  * bitwise_not(bitset set):
  *   Returns a newly copied bitset, from set, after had proceed to a not logical operation to all bits.
  *
+ * bitwise_and(bitset s1, bitset s2):
+ *   Returns a new bitset created from the and binary operation between s1 and s2.
+ *
  * SET_BIT(bitset set, size_t index, bool state):
  *   Set the bit at position index to the state given as parameter.
  *
@@ -57,9 +60,6 @@
  *   Returns the number of bits of the bitset.
  *
  * TODO:
- *   bitwise_and(bitset s1, bitset s2):
- *     Returns a new bitset created from the and binary operation between s1 and s2.
- *
  *   bitwise_or(bitset s1, bitset s2);
  *     Returns a new bitset created from the or binary operation between s1 and s2.
  *
@@ -203,23 +203,25 @@ enum bool {
 	size_t _min_len = _MIN(_B_INDEX(BITSET_SIZE(s1)), _B_INDEX(BITSET_SIZE(s2))),                                           \
 	       _max_len = _MAX(_B_INDEX(BITSET_SIZE(s1)), _B_INDEX(BITSET_SIZE(s2))),                                           \
 	       _i = -1;                                                                                                         \
+	bitset _s1 = s1,                                                                                                        \
+	       _s2 = s2;                                                                                                        \
 	bool valid = true;                                                                                                      \
                                                                                                                                 \
-	if (_min_len != _B_INDEX(BITSET_SIZE(s1)))                                                                              \
-		_SWAP(s1, s2);                                                                                                  \
+	if (_min_len != _B_INDEX(BITSET_SIZE(_s1)))                                                                             \
+		_SWAP(_s1, _s2);                                                                                                \
 	while (valid && ++_i < _min_len)                                                                                        \
-		if (s1[_i] != s2[_i])                                                                                           \
+		if (_s1[_i] != _s2[_i])                                                                                         \
 			valid = false;                                                                                          \
-	if (valid && (s1[_i] & ~(~ (_word_t) 0 << (_WORD_SIZE - _B_OFFSET(BITSET_SIZE(s1)))))                                   \
-			!= (s2[_i] & (~ (_word_t) 0 >> (_WORD_SIZE - _B_OFFSET(BITSET_SIZE(s1)))))                              \
+	if (valid && (_s1[_i] & ~(~ (_word_t) 0 << (_WORD_SIZE - _B_OFFSET(BITSET_SIZE(_s1)))))                                 \
+			!= (_s2[_i] & (~ (_word_t) 0 >> (_WORD_SIZE - _B_OFFSET(BITSET_SIZE(_s1)))))                            \
 			|| (_min_len == _max_len                                                                                \
-				&& (s2[_i] & (~ (_word_t) 0 >> (_WORD_SIZE - _B_OFFSET(BITSET_SIZE(s2))                         \
-							+ _B_OFFSET(BITSET_SIZE(s1))) << _B_OFFSET(BITSET_SIZE(s1)))))          \
+				&& (_s2[_i] & (~ (_word_t) 0 >> (_WORD_SIZE - _B_OFFSET(BITSET_SIZE(_s2))                       \
+							+ _B_OFFSET(BITSET_SIZE(_s1))) << _B_OFFSET(BITSET_SIZE(_s1)))))        \
 			|| (_min_len != _max_len                                                                                \
-				&& (s2[_i] & (~ (_word_t) 0 << (_WORD_SIZE - _B_OFFSET(BITSET_SIZE(s1)))))))                    \
+				&& (_s2[_i] & (~ (_word_t) 0 << (_WORD_SIZE - _B_OFFSET(BITSET_SIZE(_s1)))))))                  \
 		valid = false;                                                                                                  \
 	while (valid && ++_i < _max_len)                                                                                        \
-		if (s2[_i])                                                                                                     \
+		if (_s2[_i])                                                                                                    \
 			valid = false;                                                                                          \
 	valid;                                                                                                                  \
 })
@@ -233,6 +235,20 @@ enum bool {
 		_set_not[_i] = ~_set_not[_i];                                                                                   \
 	_set_not[i] = ~(_set_not[_i] & ~(~ (_word_t) 0 << (_WORD_SIZE - _B_OFFSET(BITSET_SIZE(_set_not)))));                    \
 	_set_not;                                                                                                               \
+})
+
+# define bitwise_and(s1, s2) ({                                                                                                 \
+	size_t _min_len = _MIN(_B_INDEX(BITSET_SIZE(s1)), _B_INDEX(BITSET_SIZE(s2))),                                           \
+	       _i = -1;                                                                                                         \
+	bitset _s1 = s1,                                                                                                        \
+	       _s2 = s2,                                                                                                        \
+	       _set_and = Bitset(_MAX(_B_INDEX(BITSET_SIZE(s1)), _B_INDEX(BITSET_SIZE(s2))));                                   \
+                                                                                                                                \
+	if (_min_len != _B_INDEX(BITSET_SIZE(_s1)))                                                                             \
+		_SWAP(_s1, _s2);                                                                                                \
+	while (++_i <= _min_len)                                                                                                \
+		_set_and[_i] = _s1[_i] & _s2[_i];                                                                               \
+	_set_and;                                                                                                               \
 })
 
 # ifdef _DEBUG

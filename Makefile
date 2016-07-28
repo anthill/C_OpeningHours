@@ -19,7 +19,7 @@ MOK = echo -e "\r\033[1;37m[   \033[32mOK   \033[37m] \033[0m$$file"
 
 MERR = echo -e "\r\033[1;37m[ \033[31mFAILED \033[37m] \033[0m$$file"
 
-CFLAGS = -Iinclude/ -std=c99 -W -Wall -Wextra
+CFLAGS = -Iinclude/ -std=c99 -W -Wall -Wextra -g
 
 LDFLAGS = -Llib/ -Iinclude/
 
@@ -35,11 +35,7 @@ MBIN = echo "Compiling binary..."
 
 MOBJS = echo "Compiling objects..."
 
-all:
-	@set -o pipefail ; $(MAKE) --no-print-directory lib -j4 | sed -r ':a;N;$$!ba;s/(make\[[0-9]+\]|Makefile)[^\n]*/ /g;s/\n \n/\n/g' ; \
-		if [ $${PIPESTATUS[0]} -gt "0" ] ; then \
-			exit 1 ; \
-		fi ;
+all:	lib
 
 install:	lib
 	cp $(NAME).so /usr/lib/
@@ -51,14 +47,14 @@ uninstall:
 	rm /usr/include/opening_hours.h
 	rm /usr/include/bitset.h
 
-standalone:
-	@$(MAKE) clean | sed 's/^make\[[0-9]\].*$$//'
-	@$(MAKE) $(NAME) -j4 CFLAGS="$(CFLAGS) -DSTANDALONE" | sed -r ':a;N;$$!ba;s/\n(make\[[0-9]\]|Makefile)[^\n]*//g'
-	@$(MAKE) clean | sed 's/^make\[[0-9]\].*$$//'
+standalone: clean
+	@$(MAKE) $(NAME) -j4 CFLAGS="$(CFLAGS) -DSTANDALONE" --no-print-directory | grep -v '^.ake.*$$'
+	@echo
+	@$(MAKE) clean 2>&1 >/dev/null
 
 lib:
 	@echo
-	@set -o pipefail ; $(MAKE) --no-print-directory $(NAME).so -j4 NAME="$(NAME).so" CC="gcc -shared -fPIC" CFLAGS="$(CFLAGS)" LDFLAGS="$(LDFLAGS)" 2>&1 | sed -r ':a;N;$$!ba;s/\n(make\[[0-9]\]|Makefile)[^\n]*//g' ; \
+	@set -o pipefail ; $(MAKE) --no-print-directory $(NAME).so -j4 NAME="$(NAME).so" CC="gcc -shared -fPIC" CFLAGS="$(CFLAGS)" LDFLAGS="$(LDFLAGS)" 2>&1 | grep -v '^.ake.*$$' ; \
 		if [ $${PIPESTATUS[0]} -gt "0" ] ; then \
 			exit 1 ; \
 		fi ;
@@ -74,7 +70,7 @@ $(NAME):	$(CC_OBJS)
 	$(MWAIT) ; $(CC) $(CFLAGS) $(LDFLAGS) -o $(NAME) $(OBJS) && $(MOK) || $(MERR)
 
 test:
-	@$(MAKE) $(NAME)-test -j4 NAME=$(NAME)-test CFLAGS="$(CFLAGS) -DDEBUG" LDFLAGS="$(LDFLAGS) -lcunit" SRCS="$(SRCS) ./src/tests.c" | sed -r ':a;N;$$!ba;s/\n(make\[[0-9]\]|Makefile)[^\n]*//g'
+	@$(MAKE) $(NAME)-test -j4 NAME=$(NAME)-test CFLAGS="$(CFLAGS) -DDEBUG" LDFLAGS="$(LDFLAGS) -lcunit" SRCS="$(SRCS) ./src/tests.c" | grep -v '^.ake.*$$'
 	@./$(NAME)-test
 
 %.occ:

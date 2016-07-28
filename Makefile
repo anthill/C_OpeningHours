@@ -38,14 +38,14 @@ MOBJS = echo "Compiling objects..."
 all:	lib
 
 install:	lib
-	cp $(NAME).so /usr/lib/
-	cp ./include/opening_hours.h /usr/include
-	cp ./include/bitset.h /usr/include
+	cp $(NAME).so /usr/local/lib/
+	cp ./include/opening_hours.h /usr/local/include
+	cp ./include/bitset.h /usr/local/include
 
 uninstall:
-	rm /usr/lib/$(NAME).so
-	rm /usr/include/opening_hours.h
-	rm /usr/include/bitset.h
+	rm /usr/local/lib/$(NAME).so
+	rm /usr/local/include/opening_hours.h
+	rm /usr/local/include/bitset.h
 
 standalone: clean
 	@$(MAKE) $(NAME) -j4 CFLAGS="$(CFLAGS) -DSTANDALONE" --no-print-directory | grep -v '^.ake.*$$'

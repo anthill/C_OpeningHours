@@ -233,7 +233,7 @@ enum bool {
                                                                                                                                 \
 	while (++_i < _len)                                                                                                     \
 		_set_not[_i] = ~_set_not[_i];                                                                                   \
-	_set_not[i] = ~(_set_not[_i] & ~(~ (_word_t) 0 << (_WORD_SIZE - _B_OFFSET(BITSET_SIZE(_set_not)))));                    \
+	_set_not[i] = ~(_set_not[_i] & (~ (_word_t) 0 >> (_WORD_SIZE - _B_OFFSET(BITSET_SIZE(_set_not)))));                     \
 	_set_not;                                                                                                               \
 })
 
@@ -265,7 +265,7 @@ enum bool {
                                                                                                                                 \
 	while (++_i < _min_len)                                                                                                 \
 		_set_or[_i] |= _s1[_i];                                                                                         \
-	_set_or[_i] |= _s1[_i] & ~(~ (_word_t) 0 >> (_WORD_SIZE - _B_OFFSET(BITSET_SIZE(_s1))))                                 \
+	_set_or[_i] |= _s1[_i] & (~ (_word_t) 0 >> (_WORD_SIZE - _B_OFFSET(BITSET_SIZE(_s1))))                                  \
 	_set_or;                                                                                                                \
 })
 

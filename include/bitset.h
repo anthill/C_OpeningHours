@@ -49,6 +49,9 @@
  * bitwise_and(bitset s1, bitset s2):
  *   Returns a new bitset created from the and binary operation between s1 and s2.
  *
+ * bitwise_or(bitset s1, bitset s2);
+ *   Returns a new bitset created from the or binary operation between s1 and s2.
+ *
  * SET_BIT(bitset set, size_t index, bool state):
  *   Set the bit at position index to the state given as parameter.
  *
@@ -60,9 +63,6 @@
  *   Returns the number of bits of the bitset.
  *
  * TODO:
- *   bitwise_or(bitset s1, bitset s2);
- *     Returns a new bitset created from the or binary operation between s1 and s2.
- *
  *   bitwise_xor(bitset s1, bitset s2);
  *     Returns a new bitset created from the xor binary operation between s1 and s2.
  *
@@ -249,6 +249,24 @@ enum bool {
 	while (++_i <= _min_len)                                                                                                \
 		_set_and[_i] = _s1[_i] & _s2[_i];                                                                               \
 	_set_and;                                                                                                               \
+})
+
+# define bitwise_or(s1, s2) ({                                                                                                  \
+	size_t _min_len = _MIN(_B_INDEX(BITSET_SIZE(s1)), _B_INDEX(BITSET_SIZE(s2))),                                           \
+	       _max_len = _MAX(_B_INDEX(BITSET_SIZE(s1)), _B_INDEX(BITSET_SIZE(s2))),                                           \
+	       _i = -1;                                                                                                         \
+	bitset _s1 = s1,                                                                                                        \
+	       _s2 = s2,                                                                                                        \
+	       _set_or,                                                                                                         \
+                                                                                                                                \
+	if (_min_len != _B_INDEX(BITSET_SIZE(_s1)))                                                                             \
+		_SWAP(_s1, _s2);                                                                                                \
+	_set_or = copy_bitset(_s2);                                                                                             \
+                                                                                                                                \
+	while (++_i < _min_len)                                                                                                 \
+		_set_or[_i] |= _s1[_i];                                                                                         \
+	_set_or[_i] |= _s1[_i] & ~(~ (_word_t) 0 >> (_WORD_SIZE - _B_OFFSET(BITSET_SIZE(_s1))))                                 \
+	_set_or;                                                                                                                \
 })
 
 # ifdef _DEBUG

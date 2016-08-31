@@ -6,7 +6,7 @@ int is_open(opening_hours oh, when date) {
 	opening_hours cur = oh;
 
 	do {
-		selector_sequence selector = oh->rule.selector;
+		selector_sequence selector = cur->rule.selector;
 
 		if (selector.anyway
 				|| (GET_BIT(selector.wide_range.years, date.tm_year)
